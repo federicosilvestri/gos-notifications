@@ -1,9 +1,120 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
-  title: $Title$
-  description: $Title$
+  title: Notifications Service API
+  description: Notifications Service API for GoOutSafe Application
   version: 1.0.0
 servers:
-  - url: '$https$'
+  - url: /
 paths:
-  $END$
+  /notification/{notif_id}:
+    put:
+      operationId: gooutsafe.resources.notifications.set_status
+      summary: Set the notification status
+      tags:
+        - Notification
+        - Customer
+      parameters:
+        - name: notif_id
+          description: Notification ID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Body may cotains the status of notification
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - read
+              properties:
+                read:
+                  type: boolean
+                  description: This property is set to true if user has read the notification
+      responses:
+        200:
+          description: Notification status updated
+        404:
+          description: Notification does not exist
+    get:
+      summary: Get a notification by its id
+      operationId: gooutsafe.resources.notifications.get_by_id
+      tags:
+        - Notification
+      parameters:
+        - name: notif_id
+          description: Notification ID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        404:
+          description: The notification does not exist
+        200:
+          description: Notification served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        default:
+          description: An error is occured
+
+  /notifications/{user_id}:
+    get:
+      summary: Get the notifications for a specific customer
+      operationId: gooutsafe.resources.notifications.get_by_user_id
+      tags:
+        - Customer
+      parameters:
+        - name: user_id
+          description: Customer Unique Identificator
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        404:
+          description: The users has not notifications
+        200:
+          description: The list of notification
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Notification'
+        default:
+          description: An error occured during retrieving the notification for customer
+
+components:
+  schemas:
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        target_user_id:
+          type: integer
+          format: int64
+        positive_customer_id:
+          type: integer
+          format: int64
+        contagion_restaurant_id:
+          type: integer
+          format: int64
+        contagion_datetime:
+          type: string
+          format: date
+        timestamp:
+          type: string
+          format: timestamp
+        read:
+          type: boolean
