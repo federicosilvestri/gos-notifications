@@ -24,7 +24,8 @@ def get_list(positive_id: int):
     :param positive_id: user ID
     :return: None
     """
-    ctl = ContactTracingList.objects(positive_id=positive_id)[0]
+    #ctl = ContactTracingList.objects(positive_id=positive_id)[0]
+    ctl = ContactTracingList.objects(positive_id=positive_id).first()
 
     if ctl is None:
         return NoContent, 404
