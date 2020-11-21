@@ -1,5 +1,6 @@
 from gooutsafe import celery
 from gooutsafe import logger
+from gooutsafe.comm.reservation_manager import ReservationManager
 from gooutsafe.models import ContactTracingList, ContactTracing
 
 

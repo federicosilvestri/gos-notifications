@@ -65,7 +65,7 @@ def create_app():
         # disable communication for testing purposes
         comm.disabled = True
     else:
-        comm.init_rabbit_mq(app)
+        comm.init_rabbit_mq()
 
     # checking the environment
     if flask_env != 'testing':
