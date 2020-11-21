@@ -1,13 +1,20 @@
 from flask import jsonify
-
-
-def set_status(notif_id: int):
-    return '', 200
-
-
-def get_by_id(notif_id: int):
-    return '', 200
+from connexion import NoContent
+from datetime import date
+from gooutsafe.models.notification import Notification
 
 
 def get_by_user_id(user_id: int):
-    return '', 200
+    """
+    Given the user id, this function searches inside database the notifications and returns it.
+
+    :param user_id: user ID
+    :return: json response
+    """
+    
+    notifications = Notification.objects(target_user_id=user_id)
+
+    if len(notifications) == 0:
+        return NoContent, 404
+
+    return jsonify(notifications), 200

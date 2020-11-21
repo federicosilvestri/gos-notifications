@@ -22,9 +22,9 @@ def get_list(positive_id: int):
     Given the contact user id, this function searches inside database the contact tracing list and returns it.
 
     :param positive_id: user ID
-    :return: None
+    :return: json response
     """
-    #ctl = ContactTracingList.objects(positive_id=positive_id)[0]
+
     ctl = ContactTracingList.objects(positive_id=positive_id).first()
 
     if ctl is None:
