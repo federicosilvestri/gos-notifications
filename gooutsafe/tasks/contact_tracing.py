@@ -1,6 +1,6 @@
 from gooutsafe import celery
 from gooutsafe import logger
-#from gooutsafe.comm.reservation_manager import ReservationManager
+from gooutsafe.comm.reservation_manager import ReservationManager
 from gooutsafe.models import ContactTracingList, ContactTracing
 
 
@@ -17,18 +17,19 @@ def contact_tracing_computation(positive_id: int):
     """
     logger.info('Started a computation with positive id=%d' % positive_id)
 
-    pos_reservations = ReservationManager.retrieve_by_customer_id(user_id=positive_id)
-    """cust_contacts = []
-    restaurant_contacts = []
-    date_contacts = []"""
+    # create a new manager and start the communication
+    rm = ReservationManager()
+    rm.init_communication()
+
+    pos_reservations = rm.retrieve_by_customer_id(user_id=positive_id)
 
     for res in pos_reservations:
-        contacts = ReservationManager.retrieve_all_contact_reservation_by_id(res.id)
+        contacts = rm.retrieve_all_contact_reservation_by_id(res.id)
         for c in contacts:
-            #cust = CustomerManager.retrieve_by_id(c.user_id)
             ctracing_list = ContactTracingList(positive_id=positive_id)
-            ctracing_list.tracing_list = ContactTracing(contact_id= c.user.id, restaurant_id= c.restaurant_id, reservation_id= c.reservation_id)
+            ctracing_list.tracing_list = ContactTracing(contact_id=c.user.id, restaurant_id=c.restaurant_id,
+                                                        reservation_id=c.reservation_id)
             ctracing_list.save()
-            #restaurant_contacts.append(RestaurantManager.retrieve_by_id(c.restaurant_id).name)
-            #date_contacts.append(c.start_time.date())
 
+    # close the communication of manager
+    rm.close_communication()
