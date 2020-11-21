@@ -14,13 +14,4 @@ class Notification(db.Document):
     contagion_restaurant_id = me.IntField(min_value=0, required=True)
     contagion_datetime = me.DateTimeField(required=True)
     timestamp = me.DateTimeField(default=datetime.now(), required=True)
-
     # read = me.BooleanField(default=False, required=True)
-
-    def __init__(self, target_user_id, positive_customer_id, contagion_restaurant_id, contagion_datetime):
-        super(Notification, self).__init__(
-            target_user_id=target_user_id,
-            positive_customer_id=positive_customer_id,
-            contagion_restaurant_id=contagion_restaurant_id,
-            contagion_datetime=contagion_datetime,
-        )

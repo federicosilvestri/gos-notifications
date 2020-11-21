@@ -1,3 +1,7 @@
+from flask import jsonify
+from connexion import NoContent
+from gooutsafe.models.contact_tracing import ContactTracingList
+
 
 def trigger_generation(positive_id: int):
     """
@@ -7,6 +11,7 @@ def trigger_generation(positive_id: int):
     :param positive_id: user ID
     :return: None
     """
+    # celery.submitTask(positive_id=positive_id)
     pass
 
 
@@ -17,4 +22,9 @@ def get_list(positive_id: int):
     :param positive_id: user ID
     :return: None
     """
-    pass
+    ctl = ContactTracingList.objects(positive_id=positive_id)[0]
+
+    if ctl is None:
+        return NoContent, 404
+
+    return jsonify(ctl), 200
