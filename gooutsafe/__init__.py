@@ -9,12 +9,10 @@ from celery import Celery
 import connexion
 from flask_environments import Environments
 from flask import Flask
-from flask_migrate import Migrate
 from flask_mongoengine import MongoEngine
 import logging
 
 db: MongoEngine
-migrate: Migrate
 app: Flask
 api_app: connexion.FlaskApp
 logger: logging.Logger
@@ -28,7 +26,6 @@ def create_app():
     """
     global db
     global app
-    global migrate
     global api_app
     global celery
 
@@ -145,9 +142,18 @@ def make_celery(_app):
     _celery.conf.timezone = 'Europe/Rome'
     _celery.conf.update(_app.config)
 
+    """
+    Importing the tasks with celery
+    """
+    import gooutsafe.tasks
+
     class ContextTask(_celery.Task):
         def __call__(self, *args, **kwargs):
             with _app.app_context():
                 return self.run(*args, **kwargs)
 
     return _celery
+
+
+def create_app_with_celery():
+    return create_app(), celery

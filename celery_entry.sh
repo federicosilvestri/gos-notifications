@@ -1,4 +1,3 @@
 #!/bin/sh
-
-celery -A app.celery beat --loglevel=INFO&
-celery -A app.celery worker --loglevel=Info
+celery -A background.celery beat --loglevel=INFO&
+celery -A background.celery worker --loglevel=INFO

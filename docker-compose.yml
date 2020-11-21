@@ -19,6 +19,12 @@ services:
     depends_on:
       - db
 
+  celery_worker:
+    restart: unless-stopped
+    extends:
+      service: worker_base
+    command: /bin/sh celery_entry.sh
+
   db:
     image: library/mongo:4.2.2
     restart: unless-stopped
