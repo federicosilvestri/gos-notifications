@@ -1,6 +1,7 @@
 from flask import jsonify
 from connexion import NoContent
 from gooutsafe.models.contact_tracing import ContactTracingList
+from gooutsafe.tasks.contact_tracing import contact_tracing_computation
 
 
 def trigger_generation(positive_id: int):
@@ -11,8 +12,9 @@ def trigger_generation(positive_id: int):
     :param positive_id: user ID
     :return: None
     """
-    # celery.submitTask(positive_id=positive_id)
-    pass
+    contact_tracing_computation.delay(positive_id=positive_id)
+
+    return NoContent, 200
 
 
 def get_list(positive_id: int):

@@ -12,3 +12,22 @@ MONGO_INITDB_DATABASE=gos_notifications
 MONGODB_HOST=localhost
 MONGODB_PORT=27017
 MONGODB_DB=gos_notifications
+
+#
+# Rabbit MQ configuration for
+# rabbitmq container
+#
+#------------------------
+RABBITMQ_DEFAULT_VHOST=gos
+
+#
+# Rabbit MQ configuration
+# for worker node
+#
+#------------------------
+#
+# RABBIT_MQ_HOST=
+#
+RABBIT_MQ_PORT=5672
+RABBIT_MQ_VHOST=gos
+RABBIT_MQ_SEND_EXCHANGE_NAME=gos_notifications

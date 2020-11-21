@@ -58,6 +58,9 @@ def create_app():
     env = Environments(app)
     env.from_object(config_object)
 
+    # creating celery
+    celery = make_celery(app)
+
     # loading communications
     import gooutsafe.comm as comm
 
@@ -81,9 +84,6 @@ def create_app():
 
     # registering to api app all specifications
     register_specifications(api_app)
-
-    # creating celery
-    celery = make_celery(app)
 
     return app
 
@@ -116,29 +116,38 @@ def register_specifications(_api_app):
                 _api_app.add_api(file_path)
 
 
-def make_celery(app):
+def make_celery(_app):
     """
     This function create celery instance.
 
-    :param app: Application Object
+    :param _app: Application Object
     :return: Celery instance
     """
-    redis_host = os.getenv('REDIS_HOST', 'localhost')
-    redis_port = os.getenv('REDIS_PORT', 6379)
-
-    backend = broker = 'redis://%s:%d' % (redis_host, redis_port)
+    broker_uri = 'pyamqp://%s:%s/%s' % (
+        os.getenv('RABBIT_MQ_HOST', None),
+        os.getenv('RABBIT_MQ_PORT', None),
+        os.getenv('RABBIT_MQ_VHOST', None)
+    )
+    backend_uri = 'mongodb://%s:%s/%s' % (
+        os.getenv('MONGODB_HOST', None),
+        os.getenv('MONGODB_PORT', None),
+        os.getenv('MONGODB_DB', None)
+    )
+    """
+    @TODO: add a control to variables.
+    """
 
     _celery = Celery(
-        app.name,
-        broker=broker,
-        backend=backend
+        _app.name,
+        broker=broker_uri,
+        backend=backend_uri
     )
     _celery.conf.timezone = 'Europe/Rome'
-    _celery.conf.update(app.config)
+    _celery.conf.update(_app.config)
 
     class ContextTask(_celery.Task):
         def __call__(self, *args, **kwargs):
-            with app.app_context():
+            with _app.app_context():
                 return self.run(*args, **kwargs)
 
     return _celery

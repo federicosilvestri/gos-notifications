@@ -17,5 +17,6 @@ class ContactTracingList(db.Document):
     by a positive user ID.
     """
 
-    positive_id = me.IntField(min_value=0)
+    positive_id = me.IntField(min_value=0, primary=True)
     tracing_list = me.ListField(me.EmbeddedDocumentField(ContactTracing))
+
