@@ -71,12 +71,12 @@ class ReservationManager:
     def close_communication(self) -> None:
         self.channel.basic_cancel('ReservationManagerConsumer')
 
-    def retrieve_by_customer_id(self, customer_id: int):
+    def retrieve_by_customer_id(self, user_id: int):
         return self.__send_receive_message(
-            message=dict(func='retrieve_by_customer_id', customer_id=customer_id)
+            message=dict(func='retrieve_by_customer_id', customer_id=user_id)
         )
 
-    def retrieve_all_contact_reservation_by_id(self, customer_id: int):
+    def retrieve_all_contact_reservation_by_id(self, user_id: int):
         return self.__send_receive_message(
-            message=dict(func='retrieve_all_contact_reservation_by_id', customer_id=customer_id)
+            message=dict(func='retrieve_all_contact_reservation_by_id', customer_id=user_id)
         )
