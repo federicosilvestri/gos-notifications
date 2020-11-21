@@ -1,0 +1,14 @@
+#
+# Environment File Example
+#
+
+# Flask Environment
+FLASK_ENV=development
+
+# MongoDB instance settings
+MONGO_INITDB_DATABASE=gos_notifications
+
+# MongoDB settings for Flask application
+MONGODB_HOST=localhost
+MONGODB_PORT=27017
+MONGODB_DB=gos_notifications

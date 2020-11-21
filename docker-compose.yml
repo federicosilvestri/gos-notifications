@@ -1,0 +1,40 @@
+version: "3"
+services:
+  worker_base:
+    build: .
+    env_file:
+      - env_file
+    environment:
+      - MONGODB_HOST=db
+      - RABBIT_MQ_HOST=rabbit_mq
+    command: 'false'
+
+  worker:
+    restart: always
+    extends:
+      service: worker_base
+    command: gunicorn --config gunicorn.conf.py wsgi:app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  db:
+    image: library/mongo:4.2.2
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    env_file:
+      - env_file
+
+
+
+#
+#  example_data_loader:
+#    extends:
+#      service: base
+#    env_file:
+#      - env_file
+#    command: python load_example_data.py
+#    depends_on:
+#      - db

@@ -3,7 +3,7 @@ Go Out Safe
 Web Server Gateway Interface
 
 This file is the entry point for
-gooutsafe-users-ms microservice.
+gooutsafe-notifications-ms microservice.
 """
 from gooutsafe import create_app
 

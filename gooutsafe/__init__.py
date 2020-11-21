@@ -8,17 +8,17 @@ __version__ = '0.1'
 from celery import Celery
 import connexion
 from flask_environments import Environments
+from flask import Flask
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
+from flask_mongoengine import MongoEngine
 import logging
 
-db = None
-migrate = None
-debug_toolbar = None
-app = None
-api_app = None
-logger = None
-celery = None
+db: MongoEngine
+migrate: Migrate
+app: Flask
+api_app: connexion.FlaskApp
+logger: logging.Logger
+celery: Celery
 
 
 def create_app():
@@ -37,8 +37,7 @@ def create_app():
 
     api_app = connexion.FlaskApp(
         __name__,
-        server='flask',
-        specification_dir='openapi/',
+        server='flask'
     )
 
     # getting the flask app
@@ -68,24 +67,17 @@ def create_app():
     else:
         comm.init_rabbit_mq(app)
 
-    # registering db
-    db = SQLAlchemy(
-        app=app
-    )
+    # checking the environment
+    if flask_env != 'testing':
+        db = MongoEngine(
+            app=app
+        )
+    else:
+        # Loading the MongoMock
+        db = None
 
     # requiring the list of models
     import gooutsafe.models
-
-    # creating migrate
-    migrate = Migrate(
-        app=app,
-        db=db
-    )
-
-    # checking the environment
-    if flask_env == 'testing':
-        # we need to populate the db
-        db.create_all()
 
     # registering to api app all specifications
     register_specifications(api_app)

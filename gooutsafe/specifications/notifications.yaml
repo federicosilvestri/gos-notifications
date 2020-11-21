@@ -6,47 +6,35 @@ info:
 servers:
   - url: /
 paths:
-  /notification/{notif_id}:
-    put:
-      operationId: gooutsafe.resources.notifications.set_status
-      summary: Set the notification status
+  /contact_tracing/{positive_id}:
+    post:
+      summary: Trigger the generation of contact tracing
+      operationId: gooutsafe.resources.contact_tracing.trigger_generation
       tags:
-        - Notification
-        - Customer
+        - ContactTracingGeneration
       parameters:
-        - name: notif_id
-          description: Notification ID
+        - name: positive_id
+          description: The positive customer already set to positive
           in: path
           required: true
           schema:
             type: integer
             format: int64
-      requestBody:
-        description: Body may cotains the status of notification
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - read
-              properties:
-                read:
-                  type: boolean
-                  description: This property is set to true if user has read the notification
       responses:
-        200:
-          description: Notification status updated
-        404:
-          description: Notification does not exist
+        201:
+          description: Task created
+        409:
+          description: Task already started, results will be available soon
+        default:
+          description: An internal error is occured during creation of the task
     get:
-      summary: Get a notification by its id
-      operationId: gooutsafe.resources.notifications.get_by_id
+      summary: Get the list of contacts of the positive customer
+      operationId: gooutsafe.resources.contact_tracing.get_list
       tags:
-        - Notification
+        - ContactTracingRetrieving
       parameters:
-        - name: notif_id
-          description: Notification ID
+        - name: positive_id
+          description: The positive customer already set to positive
           in: path
           required: true
           schema:
@@ -54,15 +42,16 @@ paths:
             format: int64
       responses:
         404:
-          description: The notification does not exist
+          description: The positive customer has no contacts
         200:
-          description: Notification served
+          description: The contact tracing list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Notification'
+                $ref: '#/components/schemas/ContactTracingList'
         default:
-          description: An error is occured
+          description: An internal error has occurred
+
 
   /notifications/{user_id}:
     get:
@@ -98,9 +87,6 @@ components:
     Notification:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
         target_user_id:
           type: integer
           format: int64
@@ -116,5 +102,30 @@ components:
         timestamp:
           type: string
           format: timestamp
-        read:
-          type: boolean
+    ContactTracing:
+      type: object
+      properties:
+        contact_id:
+          type: integer
+          format: int64
+        restaurant_id:
+          type: integer
+          format: int64
+        reservation_id:
+          type: integer
+          format: int64
+      required:
+        - contact_id
+        - restaurant_id
+        - reservation_id
+    ContactTracingList:
+      type: object
+      properties:
+        positive_user_id:
+          type: integer
+          format: int64
+        list:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/ContactTracing'
