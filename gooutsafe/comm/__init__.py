@@ -1,45 +1,26 @@
 """
 This package contains all the classes
 that manage the communications with other microservices.
-
-*In particular the behavior of a communication object should be designed as a Signal Sender / Signal Handler*
-
-For example if a user is deleted we should send a message to channel USER with topic = USER_DELETION,
-and message = USER WITH ID <USER_ID> DELETED.
-The microservice Restaurant, that is subscribed to the channel USER, will filter the messages with USER_DELETION topic.
-When it receives a message, it will delete the restaurant associated with foreign key OPERATOR_ID=<USER_ID>.
-The same operation can be done by Notification microservice.
-
-Using this kind of design we improve the microservices independence.
 """
 import os
 from gooutsafe import logger
-from flask_rabmq import RabbitMQ
+import pika
 
 __REQUIRED_CONFIG_KEYS = ['RABBIT_MQ_HOST', 'RABBIT_MQ_PORT',
-                          'RABBIT_MQ_VHOST', 'RABBIT_MQ_SEND_EXCHANGE_NAME']
+                          'RABBIT_MQ_VHOST', 'RESERVATION_WORKER_QUEUE_NAME']
 
-"""Rabbit MQ instance
-"""
-rabbit = None
-disabled = False
+amqp_connection: pika.BlockingConnection
+conf = dict
+disabled: bool
 
 
-def init_rabbit_mq(app):
+def init_rabbit_mq():
     """
-    Initialize Rabbit MQ
-    :param app: Flask application
+    Initialize Rabbit MQ Connection
     :return: None
     """
-    global rabbit
-
-    app.config.setdefault('RABMQ_SEND_POOL_SIZE', 2)
-    app.config.setdefault('RABMQ_SEND_POOL_ACQUIRE_TIMEOUT', 5)
-    # setting the fanout type to indicate
-    # the publish/subscribe design, as documented
-    # here https://www.rabbitmq.com/tutorials/tutorial-three-python.html
-    #
-    app.config.setdefault('RABMQ_SEND_EXCHANGE_TYPE', 'topic')
+    global amqp_connection
+    global conf
 
     # loading configuration
     conf = dict()
@@ -51,12 +32,10 @@ def init_rabbit_mq(app):
 
         conf[key] = value
 
-    # Setting up the RabbitURI
-    app.config.setdefault('RABMQ_RABBITMQ_URL', 'amqp://%s:%s/%s' % (
-        conf['RABBIT_MQ_HOST'], conf['RABBIT_MQ_PORT'],
-        conf['RABBIT_MQ_VHOST']))
-    app.config.setdefault('RABMQ_SEND_EXCHANGE_NAME', conf['RABBIT_MQ_SEND_EXCHANGE_NAME'])
+    # Getting parameters
+    url = 'amqp://%s:%s/%s' % (conf['RABBIT_MQ_HOST'], conf['RABBIT_MQ_PORT'], conf['RABBIT_MQ_VHOST'])
+    parameters = pika.connection.URLParameters(url)
 
-    rabbit = RabbitMQ(app=app)
-
-    logger.info('Rabbit MQ initialized!')
+    # Creating connection to Rabbit Broker
+    amqp_connection = pika.BlockingConnection(parameters=parameters)
+    logger.info('AMQP Connection initialized!')

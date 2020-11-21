@@ -25,9 +25,7 @@ RABBITMQ_DEFAULT_VHOST=gos
 # for worker node
 #
 #------------------------
-#
-# RABBIT_MQ_HOST=
-#
+RABBIT_MQ_HOST=localhost
 RABBIT_MQ_PORT=5672
 RABBIT_MQ_VHOST=gos
-RABBIT_MQ_EXCHANGE_NAME=gos_notifications
+RESERVATION_WORKER_QUEUE_NAME=reservation_queue

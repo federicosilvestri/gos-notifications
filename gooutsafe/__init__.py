@@ -61,6 +61,11 @@ def create_app():
     # loading communications
     import gooutsafe.comm as comm
 
+    if flask_env != 'testing':
+        comm.init_rabbit_mq()
+    else:
+        comm.disabled = True
+
     if flask_env != 'production':
         # disable communication for testing purposes
         comm.disabled = True
