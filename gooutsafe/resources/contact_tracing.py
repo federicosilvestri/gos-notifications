@@ -2,6 +2,10 @@ from flask import jsonify
 from connexion import NoContent
 from gooutsafe.models.contact_tracing import ContactTracingList
 from gooutsafe.tasks.contact_tracing import contact_tracing_computation
+from gooutsafe.tasks.health_authority_tasks import (
+    notify_restaurant_owners_about_positive_booked_customer,
+    notify_restaurant_owners_about_positive_past_customer,
+    notify_customers_about_positive_contact)
 
 
 def trigger_generation(positive_id: int):
@@ -12,6 +16,9 @@ def trigger_generation(positive_id: int):
     :param positive_id: user ID
     :return: None
     """
+    notify_restaurant_owners_about_positive_past_customer(positive_id)
+    notify_restaurant_owners_about_positive_booked_customer(positive_id)
+    notify_customers_about_positive_contact(positive_id)
     contact_tracing_computation.delay(positive_id=positive_id)
 
     return NoContent, 200
