@@ -1,8 +1,7 @@
 from gooutsafe import celery
 from gooutsafe.models.notification import Notification
-from gooutsafe.rao.reservation_manager import ReservationManager
-
-
+from gooutsafe.comm.reservation_manager import ReservationManager
+#TODO create method in RestaurantManager
 def notify_restaurant_owners_about_positive_past_customer(customer_id):
     notify_restaurant_owners_about_positive_past_customer_task.delay(customer_id)
 
