@@ -1,5 +1,32 @@
 version: "3"
 services:
+  db:
+    image: library/mongo:4.2.2
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    env_file:
+      - env_file
+    healthcheck:
+      test: [ "CMD-SHELL", "mongo", "--eval", "\"db.adminCommand('ping')\"" ]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+
+  rabbit_mq:
+    image: library/rabbitmq:3.8.5-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - env_file
+    healthcheck:
+      # basic health check
+      test: rabbitmq-diagnostics -q ping
+      interval: 20s
+      timeout: 10s
+      retries: 3
+
   worker_base:
     build: .
     env_file:
@@ -17,37 +44,18 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      rabbit_mq:
+        condition: service_healthy
 
   celery_worker:
     restart: unless-stopped
     extends:
       service: worker_base
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbit_mq:
+        condition: service_healthy
     command: /bin/sh celery_entry.sh
-
-  db:
-    image: library/mongo:4.2.2
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    env_file:
-      - env_file
-
-  rabbit_mq:
-    image: library/rabbitmq:3.6-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    env_file:
-      - env_file
-
-
-#
-#  example_data_loader:
-#    extends:
-#      service: base
-#    env_file:
-#      - env_file
-#    command: python load_example_data.py
-#    depends_on:
-#      - db
