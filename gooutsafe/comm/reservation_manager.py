@@ -80,3 +80,25 @@ class ReservationManager:
         return self.__send_receive_message(
             message=dict(func='retrieve_all_contact_reservation_by_id', customer_id=user_id)
         )
+
+    @classmethod
+    def retrieve_by_customer_id_in_future(cls, customer_id):
+        m = ReservationManager()
+        m.init_communication()
+        ret = m.__send_receive_message(
+            message=dict(func='retrieve_by_customer_id_in_future', customer_id=customer_id)
+        )
+        m.close_communication()
+
+        return ret
+
+    @classmethod
+    def retrieve_by_customer_id_in_last_14_days(cls, customer_id):
+        m = ReservationManager()
+        m.init_communication()
+        ret = m.__send_receive_message(
+            message=dict(func='retrieve_by_customer_id_in_last_14_days', customer_id=customer_id)
+        )
+        m.close_communication()
+
+        return ret
