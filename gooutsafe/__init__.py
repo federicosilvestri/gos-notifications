@@ -61,10 +61,10 @@ def create_app():
     # loading communications
     import gooutsafe.comm as comm
 
-    if flask_env != 'testing':
-        comm.init_rabbit_mq()
-    else:
-        comm.disabled = True
+    #if flask_env != 'testing':
+    comm.init_rabbit_mq()
+    """else:
+        comm.disabled = True"""
 
     if flask_env != 'production':
         # disable communication for testing purposes
@@ -72,14 +72,10 @@ def create_app():
     else:
         comm.init_rabbit_mq()
 
-    # checking the environment
-    if flask_env != 'testing':
-        db = MongoEngine(
-            app=app
-        )
-    else:
-        # Loading the MongoMock
-        db = None
+    
+    db = MongoEngine(
+        app=app
+    )
 
     # requiring the list of models
     import gooutsafe.models
