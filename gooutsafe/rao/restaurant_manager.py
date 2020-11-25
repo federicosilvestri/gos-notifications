@@ -6,7 +6,7 @@ class RestaurantManager(object):
     """
     This class represent the Resource Access Object.
     """
-    RESTAURANT_URL = 'http://%s:%s/' % (
+    RESTAURANT_URL = 'http://%s:%s' % (
         os.getenv('RESTAURANTS_MS_HOST', None),
         os.getenv('RESTAURANTS_MS_PORT', None)
     )
