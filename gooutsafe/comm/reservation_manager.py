@@ -152,6 +152,14 @@ class ReservationManager:
             message=dict(func='retrieve_all_contact_reservation_by_id', customer_id=user_id)
         )
 
+    @staticmethod
+    def retrieve_all_contact_reservation_by_id_static(user_id: int):
+        m = ReservationManager()
+        m.init_communication()
+        result = m.retrieve_all_contact_reservation_by_id(user_id)
+        m.close_communication()
+        return result
+
     @classmethod
     def retrieve_by_customer_id_in_future(cls, customer_id):
         m = ReservationManager()

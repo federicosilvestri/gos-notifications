@@ -19,11 +19,11 @@ def contact_tracing_computation(positive_id: int):
     """
     logger.info('Started a computation with positive id=%d' % positive_id)
 
-    # create a new manager and start the communication
-    rm = ReservationManager()
-    rm.init_communication()
-
     try:
+        # create a new manager and start the communication
+        rm = ReservationManager()
+        rm.init_communication()
+
         pos_reservations = rm.retrieve_by_customer_id(user_id=positive_id)
 
         for res in pos_reservations:
@@ -37,6 +37,6 @@ def contact_tracing_computation(positive_id: int):
         logger.error('Cannot complete the task due to CommunicationException')
         logger.error(ex)
         raise TaskFailure(ex)
-
-    # close the communication of manager
-    rm.close_communication()
+    finally:
+        # close the communication of manager
+        rm.close_communication()
