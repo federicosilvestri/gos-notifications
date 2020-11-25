@@ -6,7 +6,7 @@ class RestaurantManager(object):
     """
     This class represent the Resource Access Object.
     """
-    RESTAURANT_URL = 'http://%s:%s/' % (
+    RESTAURANT_URL = 'http://%s:%s' % (
         os.getenv('RESTAURANTS_MS_HOST', None),
         os.getenv('RESTAURANTS_MS_PORT', None)
     )
@@ -23,6 +23,6 @@ class RestaurantManager(object):
                 raise RuntimeError('The restaurant does not exist!')
 
             json_response = response.json()
-            return json_response['restaurant_sheet']['owner_id']
+            return json_response['restaurant_sheet']['restaurant']['owner_id']
         except(requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             raise RuntimeError('Cannot connect to restaurant ms. Check the microservice')
