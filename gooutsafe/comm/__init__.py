@@ -4,12 +4,10 @@ that manage the communications with other microservices.
 """
 import os
 from gooutsafe import logger
-import pika
 
 __REQUIRED_CONFIG_KEYS = ['RABBIT_MQ_HOST', 'RABBIT_MQ_PORT',
                           'RABBIT_MQ_VHOST', 'RESERVATION_WORKER_QUEUE_NAME']
 
-amqp_connection: pika.BlockingConnection
 conf = dict
 disabled: bool
 
@@ -33,9 +31,17 @@ def init_rabbit_mq():
         conf[key] = value
 
     # Getting parameters
-    url = 'amqp://%s:%s/%s' % (conf['RABBIT_MQ_HOST'], conf['RABBIT_MQ_PORT'], conf['RABBIT_MQ_VHOST'])
-    parameters = pika.connection.URLParameters(url)
+    conf['RABBIT_MQ_URL'] = 'amqp://%s:%s/%s' % (
+        conf['RABBIT_MQ_HOST'], conf['RABBIT_MQ_PORT'], conf['RABBIT_MQ_VHOST'])
 
     # Creating connection to Rabbit Broker
-    amqp_connection = pika.BlockingConnection(parameters=parameters)
-    logger.info('AMQP Connection initialized!')
+    logger.info('AMQP configuration initialized!')
+
+
+class CommunicationException(Exception):
+    """
+    A very simple exception that represents an error during communication.
+    """
+
+    def __init__(self, msg):
+        super(CommunicationException, self).__init__(msg)
