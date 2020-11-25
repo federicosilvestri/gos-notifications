@@ -13,3 +13,7 @@ class TestNotifications(ViewTest):
         #no notifications
         rv = self.client.get('/notifications')
         assert rv.status_code == 404
+
+    def test_get_by_user_id_success(self):
+        rv = self.client.get('/notifications/'+str(1))
+        assert rv.status_code == 200
