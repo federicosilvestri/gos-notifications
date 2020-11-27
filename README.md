@@ -1,4 +1,4 @@
-# Go Out Safe - users
+# Go Out Safe - Notifications
 
 This is the source code of GoOutSafe application, self
 project of *Advanced Software Engineering* course,
@@ -33,10 +33,14 @@ inside the project's root.
 
 `pip install -r requirements.dev.txt`
 
+`cp env_file_example env_file`
+
 ### Run the project
 
 To run the project you have to setup the flask environment,
 you can do it by executing the following command:
+
+`docker-compose up -d db rabbit_mq`
 
 `export FLASK_ENV=<environment-name>`
 
@@ -62,21 +66,13 @@ pip install -r requirements.prod.txt
 gunicorn --config gunicorn.conf.py wsgi:app
 ```
 
-
-### Apply migrations
-
-If you change something in the models package or you create a new model,
-you have to run these commands to apply the modifications:
-
-`flask db migrate -m '<message>'`
-
-and
- 
-`flask db upgrade`
-
 ### Run tests
 
 To run all the tests, execute the following command:
+
+`docker-compose up -d db rabbit_mq`
+
+`export FLASK_ENV=development`
 
 `python -m pytest`
 
